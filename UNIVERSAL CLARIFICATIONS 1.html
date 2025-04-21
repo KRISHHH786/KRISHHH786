@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Krish's Book - Drag & Organize</title>
+  <style>
+    body {
+      font-family: 'Noto Sans Telugu', sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    #chapters {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .chapter {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: grab;
+    }
+    .chapter.dragging {
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <h1>నిజం | అబద్ధం | వాస్తవం – Drag Chapters</h1>
+  <div id="chapters">
+    <div class="chapter" draggable="true">అధ్యాయం 1: నిజం అనిపించిందే నిజమా?</div>
+    <div class="chapter" draggable="true">అధ్యాయం 2: దైవ స్వరూపాలు – మారిన చరిత్ర</div>
+    <div class="chapter" draggable="true">అధ్యాయం 3: పురాణ విజ్ఞానం vs ఆధునిక విజ్ఞానం</div>
+    <div class="chapter" draggable="true">అధ్యాయం 4: యుగధర్మం – మన పాత్ర</div>
+    <div class="chapter" draggable="true">అధ్యాయం 5: హనుమంతుని గాధ… మన శక్తి</div>
+  </div>  <script>
+    const chapters = document.getElementById('chapters');
+    let draggingEle;
+
+    chapters.addEventListener('dragstart', (e) => {
+      draggingEle = e.target;
+      e.target.classList.add('dragging');
+    });
+
+    chapters.addEventListener('dragend', (e) => {
+      e.target.classList.remove('dragging');
+    });
+
+    chapters.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const afterElement = getDragAfterElement(chapters, e.clientY);
+      const dragging = document.querySelector('.dragging');
+      if (afterElement == null) {
+        chapters.appendChild(dragging);
+      } else {
+        chapters.insertBefore(dragging, afterElement);
+      }
+    });
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.chapter:not(.dragging)')];
+
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child }
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+  </script></body>
+</html>
